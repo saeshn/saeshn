@@ -7,10 +7,14 @@ import { useEffect, useState } from "react";
 const INITIAL_OPACITIES = Array.from({ length: 32 }, () => 0.3);
 
 export function AudioWave() {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
-  const [isHovered, setIsHovered] = useState(false);
+  const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Determine if dark mode based on theme or system preference
+  const isDark = mounted
+    ? theme === "dark" || (theme === "system" && systemTheme === "dark")
+    : false;
 
   // Generate random height between min and max
   const randomHeight = (min: number, max: number) =>
@@ -21,8 +25,6 @@ export function AudioWave() {
   }, []);
 
   useEffect(() => {
-    if (!mounted) return;
-
     let isAnimating = true;
     let prevHeights = Array(32).fill(0.2);
 
@@ -48,7 +50,7 @@ export function AudioWave() {
       const bars = document.querySelectorAll(".audio-wave-bar");
       bars.forEach((bar, index) => {
         bar.animate([{ transform: `scaleY(${prevHeights[index]})` }], {
-          duration: isHovered ? 600 : 1000, // Increased duration
+          duration: isHovered ? 600 : 1000,
           easing: "cubic-bezier(0.22, 1, 0.36, 1)",
           fill: "forwards",
         });
@@ -62,21 +64,16 @@ export function AudioWave() {
           }
         },
         isHovered ? 200 : 300,
-      ); // Increased intervals
+      );
     };
 
-    // Start animation
+    // Start animation immediately
     requestAnimationFrame(animate);
 
     return () => {
       isAnimating = false;
     };
-  }, [isHovered, mounted]);
-
-  // Don't render anything until mounted to avoid hydration mismatch
-  if (!mounted) {
-    return null;
-  }
+  }, [isHovered]); // Remove mounted dependency
 
   return (
     <div
