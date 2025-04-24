@@ -38,7 +38,7 @@ export function BerlinTime() {
       </div>
       <div className="text-muted-foreground/60 font-mono text-sm">
         <div className="bg-background/50 rounded-lg px-4 py-2 backdrop-blur">
-          <span>BERLIN</span>
+          <span>52° 30′ 56,9″ N, 13° 27′ 15,1″ O</span>
         </div>
       </div>
     </div>
