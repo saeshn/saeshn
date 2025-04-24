@@ -25,6 +25,8 @@ export function AudioWave() {
   }, []);
 
   useEffect(() => {
+    if (!mounted) return;
+
     let isAnimating = true;
     let prevHeights = Array(32).fill(0.2);
 
@@ -67,13 +69,33 @@ export function AudioWave() {
       );
     };
 
-    // Start animation immediately
+    // Start animation
     requestAnimationFrame(animate);
 
     return () => {
       isAnimating = false;
     };
-  }, [isHovered]); // Remove mounted dependency
+  }, [isHovered, mounted]);
+
+  if (!mounted) {
+    return (
+      <div className="group relative flex h-40 w-full items-center justify-center overflow-hidden">
+        <div className="flex h-full w-full items-center justify-center gap-1.5">
+          {INITIAL_OPACITIES.map((opacity, index) => (
+            <div
+              key={index}
+              className="audio-wave-bar h-full w-2 rounded-full"
+              style={{
+                backgroundColor: `rgba(226, 232, 240, ${opacity})`,
+                transformOrigin: "bottom",
+                transform: "scaleY(0.2)",
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
