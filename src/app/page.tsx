@@ -4,6 +4,8 @@ import { AudioWave } from "@/components/ui/audio-wave";
 import { BerlinTime } from "@/components/ui/berlin-time";
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import { useEffect } from "react";
+import { delaGothic } from "./fonts";
+import { AudioPlayer } from "@/components/ui/audio-player";
 
 export default function Home() {
   const mouseX = useMotionValue(0);
@@ -41,7 +43,7 @@ export default function Home() {
             className="text-center"
           >
             <motion.h1
-              className="gradient-text mb-6 text-6xl font-bold tracking-tighter sm:text-7xl"
+              className={`gradient-text mb-6 text-6xl font-bold tracking-tighter sm:text-7xl ${delaGothic.className}`}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1, delay: 0.2 }}
@@ -65,6 +67,15 @@ export default function Home() {
             className="w-full max-w-2xl"
           >
             <AudioWave />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, delay: 0.8 }}
+            className="flex w-full justify-center"
+          >
+            <AudioPlayer audioUrl="/music/ONE_BLOOD.wav" autoPlay={false} />
           </motion.div>
 
           <motion.div
