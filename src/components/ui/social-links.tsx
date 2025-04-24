@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 const socialLinks = [
   {
     name: "Instagram",
-    url: "https://instagram.com/saeshn",
+    url: "https://instagram.com/s.ae.sh.n",
     icon: Instagram,
   },
   {
