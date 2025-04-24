@@ -8,6 +8,7 @@ import { useEffect } from "react";
 export default function Home() {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+console.log(mouseY)
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
