@@ -41,7 +41,7 @@ export default function Home() {
             className="text-center"
           >
             <motion.h1
-              className="gradient-text mb-6 text-7xl font-bold sm:text-9xl"
+              className="gradient-text mb-6 text-6xl font-bold tracking-tighter sm:text-7xl"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1, delay: 0.2 }}
