@@ -48,21 +48,21 @@ export function AudioWave() {
       const bars = document.querySelectorAll(".audio-wave-bar");
       bars.forEach((bar, index) => {
         bar.animate([{ transform: `scaleY(${prevHeights[index]})` }], {
-          duration: isHovered ? 400 : 800,
+          duration: isHovered ? 600 : 1000, // Increased duration
           easing: "cubic-bezier(0.22, 1, 0.36, 1)",
           fill: "forwards",
         });
       });
 
-      // Schedule next animation
+      // Schedule next animation with longer intervals
       setTimeout(
         () => {
           if (isAnimating) {
             requestAnimationFrame(animate);
           }
         },
-        isHovered ? 100 : 200,
-      );
+        isHovered ? 200 : 300,
+      ); // Increased intervals
     };
 
     // Start animation
