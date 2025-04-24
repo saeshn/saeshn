@@ -7,32 +7,35 @@ export function AudioWave() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
-  const bars = Array.from({ length: 128 }, (_, i) => i);
+  const bars = Array.from({ length: 64 }, (_, i) => i);
 
   return (
-    <div className="flex h-32 w-full items-center justify-center overflow-hidden">
-      <div className="flex h-full w-full items-center gap-[2px]">
+    <div className="flex h-40 w-full items-center justify-center overflow-hidden">
+      <div className="flex h-full w-full items-center justify-center gap-1">
         {bars.map((i) => {
-          const height = Math.sin((i * Math.PI) / 24) * 100;
+          const height = Math.sin((i * Math.PI) / 16) * 100;
+          const delay = (i / bars.length) * 0.5;
+
           return (
             <motion.div
               key={i}
-              className="h-full w-1"
+              className="h-full w-1.5"
               initial={{ scaleY: 0 }}
               animate={{
                 scaleY: [0.2, Math.abs(height) / 100, 0.2],
               }}
               transition={{
-                duration: 2.5,
+                duration: 1.5,
                 repeat: Infinity,
-                delay: i * 0.02,
+                delay,
                 ease: "easeInOut",
               }}
               style={{
                 backgroundColor: isDark
-                  ? "rgb(226 232 240 / 0.1)"
-                  : "rgb(15 23 42 / 0.1)",
+                  ? "rgb(226 232 240 / 0.2)"
+                  : "rgb(15 23 42 / 0.2)",
                 transformOrigin: "bottom",
+                borderRadius: "2px",
               }}
             />
           );

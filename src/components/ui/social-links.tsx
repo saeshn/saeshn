@@ -28,7 +28,7 @@ const socialLinks = [
 
 export function SocialLinks() {
   return (
-    <div className="flex items-center justify-center gap-6">
+    <div className="flex items-center gap-4">
       {socialLinks.map((link) => (
         <motion.a
           key={link.name}
@@ -40,7 +40,7 @@ export function SocialLinks() {
           whileTap={{ scale: 0.95 }}
         >
           <span className="sr-only">{link.name}</span>
-          <link.icon className="h-6 w-6" />
+          <link.icon className="h-5 w-5" />
         </motion.a>
       ))}
     </div>
