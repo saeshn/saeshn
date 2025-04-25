@@ -5,21 +5,30 @@ import { AudioWave } from "@/components/ui/audio-wave";
 import { BerlinTime } from "@/components/ui/berlin-time";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { delaGothic } from "./fonts";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { CustomCursor } from "@/components/ui/custom-cursor";
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isTextHovered, setIsTextHovered] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"],
   });
 
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 1.1]);
+
+  if (!isMounted) {
+    return null; // Return nothing during SSR
+  }
 
   const sparkleVariants = {
     animate: {
