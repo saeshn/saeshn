@@ -289,7 +289,10 @@ export default function Home() {
         </motion.div>
 
         {/* Right Side Navigation */}
-        <nav className="fixed top-1/2 right-76 -translate-y-1/2 space-y-8">
+        <nav
+          className="fixed top-1/2 z-50 -translate-y-1/2 space-y-8"
+          style={{ right: "304px" }}
+        >
           <ul className="space-y-8">
             {[
               "SAESHN - WHAT WE DO",
