@@ -35,13 +35,16 @@ export function AudioWave() {
 
       // Create new target heights
       const newHeights = prevHeights.map((prev) => {
-        const shouldSpike = Math.random() < 0.2;
+        const shouldSpike = Math.random() < (isHovered ? 0.3 : 0.2);
         if (shouldSpike) {
-          return randomHeight(0.7, 1);
+          return randomHeight(isHovered ? 0.8 : 0.7, 1);
         }
         // Make height somewhat related to previous height for smoother transitions
-        const minHeight = Math.max(0.2, prev - 0.3);
-        const maxHeight = Math.min(0.8, prev + 0.3);
+        const minHeight = Math.max(0.2, prev - (isHovered ? 0.4 : 0.3));
+        const maxHeight = Math.min(
+          isHovered ? 0.9 : 0.8,
+          prev + (isHovered ? 0.4 : 0.3),
+        );
         return randomHeight(minHeight, maxHeight);
       });
 
@@ -52,7 +55,7 @@ export function AudioWave() {
       const bars = document.querySelectorAll(".audio-wave-bar");
       bars.forEach((bar, index) => {
         bar.animate([{ transform: `scaleY(${prevHeights[index]})` }], {
-          duration: isHovered ? 600 : 1000,
+          duration: isHovered ? 400 : 1000,
           easing: "cubic-bezier(0.22, 1, 0.36, 1)",
           fill: "forwards",
         });
@@ -65,7 +68,7 @@ export function AudioWave() {
             requestAnimationFrame(animate);
           }
         },
-        isHovered ? 200 : 300,
+        isHovered ? 100 : 300,
       );
     };
 

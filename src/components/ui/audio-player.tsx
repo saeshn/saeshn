@@ -1,34 +1,43 @@
 import { useEffect, useRef, useState } from "react";
-import { Button } from "./button";
-import { Slider } from "./slider";
-import { Play, Pause } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { Play, Pause, Volume2, VolumeX } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface AudioPlayerProps {
   audioUrl: string;
   autoPlay?: boolean;
+  onPlayingChange?: (
+    isPlaying: boolean,
+    audio: HTMLAudioElement | null,
+  ) => void;
+  className?: string;
 }
 
-export function AudioPlayer({ audioUrl, autoPlay = false }: AudioPlayerProps) {
+export function AudioPlayer({
+  audioUrl,
+  autoPlay = false,
+  onPlayingChange,
+  className = "",
+}: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
+  const previousVolume = useRef(1);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const handleTimeUpdate = () => {
-      setProgress(audio.currentTime);
+      setCurrentTime(audio.currentTime);
     };
-
-    const handleLoadedMetadata = () => {
-      setDuration(audio.duration);
-    };
-
+    const handleLoadedMetadata = () => setDuration(audio.duration);
     const handleEnded = () => {
       setIsPlaying(false);
-      setProgress(0);
+      onPlayingChange?.(false, audio);
     };
 
     audio.addEventListener("timeupdate", handleTimeUpdate);
@@ -37,8 +46,8 @@ export function AudioPlayer({ audioUrl, autoPlay = false }: AudioPlayerProps) {
 
     if (autoPlay) {
       audio.play().catch(() => {
-        // Autoplay might be blocked by browser
         setIsPlaying(false);
+        onPlayingChange?.(false, audio);
       });
     }
 
@@ -47,24 +56,53 @@ export function AudioPlayer({ audioUrl, autoPlay = false }: AudioPlayerProps) {
       audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
       audio.removeEventListener("ended", handleEnded);
     };
-  }, [autoPlay]);
+  }, [autoPlay, onPlayingChange]);
 
-  const togglePlayPause = () => {
+  const togglePlayPause = async () => {
     if (!audioRef.current) return;
 
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play();
+    try {
+      if (isPlaying) {
+        await audioRef.current.pause();
+      } else {
+        await audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+      onPlayingChange?.(!isPlaying, audioRef.current);
+    } catch (error) {
+      console.error("Error toggling play/pause:", error);
     }
-    setIsPlaying(!isPlaying);
   };
 
-  const handleProgressChange = (newValue: number[]) => {
+  const handleSeek = (value: number[]) => {
     if (!audioRef.current) return;
-    const [value] = newValue;
-    audioRef.current.currentTime = value;
-    setProgress(value);
+    const newTime = value[0];
+    audioRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+
+  const handleVolumeChange = (value: number[]) => {
+    if (!audioRef.current) return;
+    const newVolume = value[0];
+    audioRef.current.volume = newVolume;
+    setVolume(newVolume);
+    if (newVolume > 0) {
+      setIsMuted(false);
+      previousVolume.current = newVolume;
+    }
+  };
+
+  const toggleMute = () => {
+    if (!audioRef.current) return;
+    if (isMuted) {
+      audioRef.current.volume = previousVolume.current;
+      setVolume(previousVolume.current);
+    } else {
+      previousVolume.current = volume;
+      audioRef.current.volume = 0;
+      setVolume(0);
+    }
+    setIsMuted(!isMuted);
   };
 
   const formatTime = (time: number) => {
@@ -74,35 +112,60 @@ export function AudioPlayer({ audioUrl, autoPlay = false }: AudioPlayerProps) {
   };
 
   return (
-    <div className="w-full max-w-md space-y-4">
-      <audio ref={audioRef} src={audioUrl} />
+    <div className={`bg-secondary/20 w-full rounded-xl p-4 ${className}`}>
+      <audio ref={audioRef} src={audioUrl} preload="metadata" />
 
       <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
+        <motion.button
           onClick={togglePlayPause}
-          className="h-12 w-12"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-pink-500 text-white transition-colors hover:bg-pink-600"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
-          {isPlaying ? (
-            <Pause className="h-6 w-6" />
-          ) : (
-            <Play className="h-6 w-6" />
-          )}
-        </Button>
+          {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+        </motion.button>
 
         <div className="flex-1">
           <Slider
-            value={[progress]}
+            value={[currentTime]}
+            min={0}
             max={duration}
             step={0.1}
-            onValueChange={handleProgressChange}
-            className="w-full"
+            onValueChange={handleSeek}
+            className="cursor-pointer"
           />
-          <div className="text-muted-foreground mt-1 flex justify-between text-sm">
-            <span>{formatTime(progress)}</span>
-            <span>{formatTime(duration)}</span>
-          </div>
+        </div>
+
+        <div className="flex min-w-[80px] justify-end font-mono text-sm">
+          <span className="text-pink-500">{formatTime(currentTime)}</span>
+          <span className="mx-1 text-pink-500/60">/</span>
+          <span className="text-pink-500/60">{formatTime(duration)}</span>
+        </div>
+      </div>
+
+      <div className="mt-2 flex items-center gap-4">
+        <motion.button
+          onClick={toggleMute}
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-pink-500/20 text-pink-500 transition-colors hover:bg-pink-500/30"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {volume === 0 ? <VolumeX size={16} /> : <Volume2 size={16} />}
+        </motion.button>
+
+        <div className="w-24">
+          <Slider
+            value={[volume]}
+            min={0}
+            max={1}
+            step={0.01}
+            onValueChange={handleVolumeChange}
+            className="cursor-pointer"
+          />
+        </div>
+
+        <div className="flex-1 text-sm font-medium text-pink-500/80">
+          - ONE BLOOD -
         </div>
       </div>
     </div>
