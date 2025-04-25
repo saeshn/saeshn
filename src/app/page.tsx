@@ -21,6 +21,22 @@ export default function Home() {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 1.1]);
 
+  const sparkleVariants = {
+    animate: {
+      opacity: [0.8, 1, 0.8],
+      filter: [
+        "brightness(1) drop-shadow(0 0 2px rgba(236, 72, 153, 0.3))",
+        "brightness(1.4) drop-shadow(0 0 8px rgba(236, 72, 153, 0.8))",
+        "brightness(1) drop-shadow(0 0 2px rgba(236, 72, 153, 0.3))",
+      ],
+      textShadow: [
+        "0 0 4px rgba(236, 72, 153, 0.3), 0 0 8px rgba(236, 72, 153, 0.2)",
+        "0 0 8px rgba(236, 72, 153, 0.7), 0 0 16px rgba(236, 72, 153, 0.4)",
+        "0 0 4px rgba(236, 72, 153, 0.3), 0 0 8px rgba(236, 72, 153, 0.2)",
+      ],
+    },
+  };
+
   return (
     <>
       <CustomCursor />
@@ -221,18 +237,57 @@ export default function Home() {
           <BerlinTime />
         </div>
 
+        {/* Scroll Indicator */}
+        <motion.div
+          className="fixed bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 2.5, duration: 0.8 }}
+        >
+          <p className="text-sm tracking-widest text-white/50 uppercase">
+            scroll and discover the story
+          </p>
+          <motion.div
+            animate={{
+              y: [0, 8, 0],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              repeatType: "loop",
+              ease: "easeInOut",
+            }}
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              className="text-white/50"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <polyline points="19 12 12 19 5 12"></polyline>
+            </svg>
+          </motion.div>
+        </motion.div>
+
         {/* Right Side Navigation */}
-        <nav className="fixed top-1/2 right-80 -translate-y-1/2 space-y-8">
+        <nav className="fixed top-1/2 right-76 -translate-y-1/2 space-y-8">
           <ul className="space-y-8">
             {[
-              "SAESHN RECORDS",
+              "SAESHN - WHAT WE DO",
               "COMMUNITY",
-              "CREDITZ",
+              "LYRICS",
               "RELEASES",
-              { text: "FINISH MY SONG", special: true },
+              "MERCH",
+              "CREDITS AND CONTACT",
             ].map((item, index) => (
               <motion.li
-                key={typeof item === "string" ? item : item.text}
+                key={item}
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{
@@ -243,22 +298,14 @@ export default function Home() {
               >
                 <motion.a
                   href="#"
-                  className={`group relative block text-lg font-medium transition-colors ${
-                    typeof item === "object" && item.special
-                      ? "text-pink-500/40 hover:text-pink-500"
-                      : "text-white/30 hover:text-white"
-                  }`}
+                  className="group relative block text-lg font-medium text-white/30 transition-colors hover:text-white"
                   whileHover={{ x: 0 }}
                 >
                   <span className="relative z-10 mix-blend-difference">
-                    {typeof item === "string" ? item : item.text}
+                    {item}
                   </span>
                   <motion.div
-                    className={`absolute top-0 left-0 h-full w-0 rounded-sm ${
-                      typeof item === "object" && item.special
-                        ? "bg-gradient-to-r from-pink-500/20 via-pink-500/10 to-transparent"
-                        : "bg-gradient-to-r from-pink-500/40 via-pink-500/20 to-transparent"
-                    }`}
+                    className="absolute top-0 left-0 h-full w-0 rounded-sm bg-gradient-to-r from-pink-500/40 via-pink-500/20 to-transparent"
                     initial={{ width: 0 }}
                     whileHover={{
                       width: "150%",
@@ -273,26 +320,16 @@ export default function Home() {
                       transition: { duration: 0.3, delay: 0.1 },
                     }}
                     style={{
-                      background: `linear-gradient(90deg, ${
-                        typeof item === "object" && item.special
-                          ? "#ec4899"
-                          : "#ec4899"
-                      } 0%, transparent 100%)`,
+                      background:
+                        "linear-gradient(90deg, #ec4899 0%, transparent 100%)",
                     }}
                   />
                   <motion.div
-                    className={`absolute top-1/2 -left-4 h-4 w-4 -translate-y-1/2 rounded-full ${
-                      typeof item === "object" && item.special
-                        ? "bg-pink-500/0"
-                        : "bg-pink-500/0"
-                    }`}
+                    className="absolute top-1/2 -left-4 h-4 w-4 -translate-y-1/2 rounded-full bg-pink-500/0"
                     initial={{ scale: 0 }}
                     whileHover={{
                       scale: 1,
-                      backgroundColor:
-                        typeof item === "object" && item.special
-                          ? "rgba(236, 72, 153, 0.2)"
-                          : "rgba(236, 72, 153, 0.2)",
+                      backgroundColor: "rgba(236, 72, 153, 0.2)",
                       transition: { duration: 0.3 },
                     }}
                   />
@@ -301,6 +338,65 @@ export default function Home() {
             ))}
           </ul>
         </nav>
+
+        {/* Left Side FINISH MY SONG button */}
+        <motion.div
+          className="fixed top-[65%] left-[25rem] -translate-y-1/2"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{
+            duration: 0.5,
+            delay: 3.5,
+            ease: [0.25, 0.1, 0.25, 1],
+          }}
+        >
+          <motion.a
+            href="#"
+            className="group relative block text-lg font-medium text-pink-500/80 transition-colors hover:text-pink-500"
+            whileHover={{ x: 0 }}
+            animate="animate"
+            variants={sparkleVariants}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              repeatType: "reverse",
+              ease: "easeInOut",
+            }}
+          >
+            <span className="relative z-10 mix-blend-difference">
+              FINISH MY SONG
+            </span>
+            <motion.div
+              className="absolute top-0 left-0 h-full w-0 rounded-sm bg-gradient-to-r from-pink-500/20 via-pink-500/10 to-transparent"
+              initial={{ width: 0 }}
+              whileHover={{
+                width: "150%",
+                transition: { duration: 0.4, ease: "easeOut" },
+              }}
+            />
+            <motion.div
+              className="absolute -bottom-1 left-0 h-[2px] w-0"
+              initial={{ width: 0 }}
+              whileHover={{
+                width: "100%",
+                transition: { duration: 0.3, delay: 0.1 },
+              }}
+              style={{
+                background:
+                  "linear-gradient(90deg, #ec4899 0%, transparent 100%)",
+              }}
+            />
+            <motion.div
+              className="absolute top-1/2 -left-4 h-4 w-4 -translate-y-1/2 rounded-full bg-pink-500/0"
+              initial={{ scale: 0 }}
+              whileHover={{
+                scale: 1,
+                backgroundColor: "rgba(236, 72, 153, 0.2)",
+                transition: { duration: 0.3 },
+              }}
+            />
+          </motion.a>
+        </motion.div>
       </div>
     </>
   );
