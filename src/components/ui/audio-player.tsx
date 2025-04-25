@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Slider } from "@/components/ui/slider";
-import { Play, Pause, Volume2, VolumeX } from "lucide-react";
+import {
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  SkipBack,
+  SkipForward,
+} from "lucide-react";
 import { motion } from "framer-motion";
 
 interface AudioPlayerProps {
@@ -36,8 +43,7 @@ export function AudioPlayer({
     };
     const handleLoadedMetadata = () => setDuration(audio.duration);
     const handleEnded = () => {
-      setIsPlaying(false);
-      onPlayingChange?.(false, audio);
+      setCurrentTime(0);
     };
 
     audio.addEventListener("timeupdate", handleTimeUpdate);
@@ -74,11 +80,36 @@ export function AudioPlayer({
     }
   };
 
-  const handleSeek = (value: number[]) => {
+  const skipForward = () => {
+    if (!audioRef.current) return;
+    const newTime = Math.min(currentTime + 10, duration);
+    audioRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+
+  const skipBackward = () => {
+    if (!audioRef.current) return;
+    const newTime = Math.max(currentTime - 10, 0);
+    audioRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+
+  const handleSeek = async (value: number[]) => {
     if (!audioRef.current) return;
     const newTime = value[0];
     audioRef.current.currentTime = newTime;
     setCurrentTime(newTime);
+
+    // Automatically start playing when seeking
+    if (!isPlaying) {
+      try {
+        await audioRef.current.play();
+        setIsPlaying(true);
+        onPlayingChange?.(true, audioRef.current);
+      } catch (error) {
+        console.error("Error starting playback:", error);
+      }
+    }
   };
 
   const handleVolumeChange = (value: number[]) => {
@@ -113,17 +144,37 @@ export function AudioPlayer({
 
   return (
     <div className={`bg-secondary/20 w-full rounded-xl p-4 ${className}`}>
-      <audio ref={audioRef} src={audioUrl} preload="metadata" />
+      <audio ref={audioRef} src={audioUrl} preload="metadata" loop />
 
       <div className="flex items-center gap-4">
-        <motion.button
-          onClick={togglePlayPause}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-pink-500 text-white transition-colors hover:bg-pink-600"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-        </motion.button>
+        <div className="flex items-center gap-2">
+          <motion.button
+            onClick={skipBackward}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-pink-500/20 text-pink-500 transition-colors hover:bg-pink-500/30"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <SkipBack size={16} />
+          </motion.button>
+
+          <motion.button
+            onClick={togglePlayPause}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-pink-500 text-white transition-colors hover:bg-pink-600"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+          </motion.button>
+
+          <motion.button
+            onClick={skipForward}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-pink-500/20 text-pink-500 transition-colors hover:bg-pink-500/30"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <SkipForward size={16} />
+          </motion.button>
+        </div>
 
         <div className="flex-1">
           <Slider
@@ -165,7 +216,7 @@ export function AudioPlayer({
         </div>
 
         <div className="flex-1 text-sm font-medium text-pink-500/80">
-          - ONE BLOOD -
+          - OTiTO -
         </div>
       </div>
     </div>

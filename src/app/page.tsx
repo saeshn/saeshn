@@ -11,6 +11,7 @@ import { CustomCursor } from "@/components/ui/custom-cursor";
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isTextHovered, setIsTextHovered] = useState(false);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"],
@@ -69,9 +70,48 @@ export default function Home() {
                   className="space-y-4 text-center"
                 >
                   <h1
-                    className={`${delaGothic.className} bg-gradient-to-b from-white via-white/90 to-white/50 bg-clip-text text-[12rem] leading-none font-bold tracking-tighter text-transparent`}
+                    className={`${delaGothic.className} relative text-[12rem] leading-none font-bold tracking-tighter`}
                   >
-                    OTiTO
+                    <div className="relative">
+                      {["O", "T", "i", "T", "O"].map((letter, index) => (
+                        <motion.span
+                          key={index}
+                          className="relative inline-block text-white"
+                          animate={
+                            isAudioPlaying
+                              ? {
+                                  scale: [1, 1.2, 1],
+                                  opacity: [1, 0.7, 1],
+                                  textShadow: [
+                                    "0 0 0px rgba(255,255,255,0)",
+                                    "0 0 20px rgba(255,255,255,0.5)",
+                                    "0 0 0px rgba(255,255,255,0)",
+                                  ],
+                                }
+                              : {
+                                  scale: 1,
+                                  opacity: 1,
+                                  textShadow: "0 0 0px rgba(255,255,255,0)",
+                                }
+                          }
+                          transition={
+                            isAudioPlaying
+                              ? {
+                                  duration: 2.5,
+                                  repeat: Infinity,
+                                  repeatType: "loop",
+                                  ease: [0.4, 0, 0.6, 1],
+                                  delay: index * 0.35,
+                                }
+                              : {
+                                  duration: 0.3,
+                                }
+                          }
+                        >
+                          {letter}
+                        </motion.span>
+                      ))}
+                    </div>
                   </h1>
                 </motion.div>
 
@@ -138,8 +178,11 @@ export default function Home() {
                             <div className="absolute inset-0 rounded-2xl bg-black/30 backdrop-blur-sm" />
                             <div className="relative">
                               <AudioPlayer
-                                audioUrl="/music/ONE_BLOOD.wav"
+                                audioUrl="/music/OTITO.wav"
                                 autoPlay={false}
+                                onPlayingChange={(playing) =>
+                                  setIsAudioPlaying(playing)
+                                }
                               />
                             </div>
                           </div>
@@ -177,6 +220,87 @@ export default function Home() {
         <div className="fixed right-0 bottom-0 p-4">
           <BerlinTime />
         </div>
+
+        {/* Right Side Navigation */}
+        <nav className="fixed top-1/2 right-80 -translate-y-1/2 space-y-8">
+          <ul className="space-y-8">
+            {[
+              "SAESHN RECORDS",
+              "COMMUNITY",
+              "CREDITZ",
+              "RELEASES",
+              { text: "FINISH MY SONG", special: true },
+            ].map((item, index) => (
+              <motion.li
+                key={typeof item === "string" ? item : item.text}
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{
+                  duration: 0.5,
+                  delay: 2 + index * 0.2,
+                  ease: [0.25, 0.1, 0.25, 1],
+                }}
+              >
+                <motion.a
+                  href="#"
+                  className={`group relative block text-lg font-medium transition-colors ${
+                    typeof item === "object" && item.special
+                      ? "text-pink-500/40 hover:text-pink-500"
+                      : "text-white/30 hover:text-white"
+                  }`}
+                  whileHover={{ x: 0 }}
+                >
+                  <span className="relative z-10 mix-blend-difference">
+                    {typeof item === "string" ? item : item.text}
+                  </span>
+                  <motion.div
+                    className={`absolute top-0 left-0 h-full w-0 rounded-sm ${
+                      typeof item === "object" && item.special
+                        ? "bg-gradient-to-r from-pink-500/20 via-pink-500/10 to-transparent"
+                        : "bg-gradient-to-r from-pink-500/40 via-pink-500/20 to-transparent"
+                    }`}
+                    initial={{ width: 0 }}
+                    whileHover={{
+                      width: "150%",
+                      transition: { duration: 0.4, ease: "easeOut" },
+                    }}
+                  />
+                  <motion.div
+                    className="absolute -bottom-1 left-0 h-[2px] w-0"
+                    initial={{ width: 0 }}
+                    whileHover={{
+                      width: "100%",
+                      transition: { duration: 0.3, delay: 0.1 },
+                    }}
+                    style={{
+                      background: `linear-gradient(90deg, ${
+                        typeof item === "object" && item.special
+                          ? "#ec4899"
+                          : "#ec4899"
+                      } 0%, transparent 100%)`,
+                    }}
+                  />
+                  <motion.div
+                    className={`absolute top-1/2 -left-4 h-4 w-4 -translate-y-1/2 rounded-full ${
+                      typeof item === "object" && item.special
+                        ? "bg-pink-500/0"
+                        : "bg-pink-500/0"
+                    }`}
+                    initial={{ scale: 0 }}
+                    whileHover={{
+                      scale: 1,
+                      backgroundColor:
+                        typeof item === "object" && item.special
+                          ? "rgba(236, 72, 153, 0.2)"
+                          : "rgba(236, 72, 153, 0.2)",
+                      transition: { duration: 0.3 },
+                    }}
+                  />
+                </motion.a>
+              </motion.li>
+            ))}
+          </ul>
+        </nav>
       </div>
     </>
   );
