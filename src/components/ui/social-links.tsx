@@ -35,9 +35,10 @@ export function SocialLinks() {
           href={link.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-muted-foreground hover:text-foreground transition-colors"
+          className="text-muted-foreground hover:text-foreground relative z-50 transition-colors"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
+          style={{ pointerEvents: "auto" }}
         >
           <span className="sr-only">{link.name}</span>
           <link.icon className="h-5 w-5" />

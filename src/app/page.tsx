@@ -12,6 +12,7 @@ export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isTextHovered, setIsTextHovered] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const [hasPlayedOnce, setHasPlayedOnce] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -205,9 +206,12 @@ export default function Home() {
                               <AudioPlayer
                                 audioUrl="/music/OTITO.wav"
                                 autoPlay={false}
-                                onPlayingChange={(playing) =>
-                                  setIsAudioPlaying(playing)
-                                }
+                                onPlayingChange={(playing) => {
+                                  setIsAudioPlaying(playing);
+                                  if (playing) {
+                                    setHasPlayedOnce(true);
+                                  }
+                                }}
                               />
                             </div>
                           </div>
@@ -349,63 +353,106 @@ export default function Home() {
         </nav>
 
         {/* Left Side FINISH MY SONG button */}
-        <motion.div
-          className="fixed top-[65%] left-[25rem] -translate-y-1/2"
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{
-            duration: 0.5,
-            delay: 3.5,
-            ease: [0.25, 0.1, 0.25, 1],
-          }}
-        >
-          <motion.a
-            href="#"
-            className="group relative block text-lg font-medium text-pink-500/80 transition-colors hover:text-pink-500"
-            whileHover={{ x: 0 }}
-            animate="animate"
-            variants={sparkleVariants}
+        {hasPlayedOnce && (
+          <motion.div
+            className="fixed top-[65%] left-[25rem] -translate-y-1/2"
+            initial={{
+              opacity: 0,
+              x: -100,
+              scale: 0.5,
+              filter: "blur(10px)",
+              textShadow: "0 0 0px rgba(236, 72, 153, 0)",
+            }}
+            animate={{
+              opacity: 1,
+              x: 0,
+              scale: 1,
+              filter: "blur(0px)",
+              textShadow: [
+                "0 0 20px rgba(236, 72, 153, 0.8)",
+                "0 0 40px rgba(236, 72, 153, 0.6)",
+                "0 0 20px rgba(236, 72, 153, 0.8)",
+              ],
+            }}
             transition={{
-              duration: 2,
-              repeat: Infinity,
-              repeatType: "reverse",
-              ease: "easeInOut",
+              duration: 1.2,
+              delay: 0.2,
+              ease: [0.25, 0.1, 0.25, 1],
+              textShadow: {
+                duration: 2,
+                repeat: Infinity,
+                repeatType: "reverse",
+                ease: "easeInOut",
+              },
             }}
           >
-            <span className="relative z-10 mix-blend-difference">
-              FINISH MY SONG
-            </span>
-            <motion.div
-              className="absolute top-0 left-0 h-full w-0 rounded-sm bg-gradient-to-r from-pink-500/20 via-pink-500/10 to-transparent"
-              initial={{ width: 0 }}
-              whileHover={{
-                width: "150%",
-                transition: { duration: 0.4, ease: "easeOut" },
+            <motion.a
+              href="#"
+              className="group relative block text-lg font-medium text-pink-500/80 transition-colors hover:text-pink-500"
+              whileHover={{ x: 0 }}
+              animate="animate"
+              variants={sparkleVariants}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                repeatType: "reverse",
+                ease: "easeInOut",
               }}
-            />
-            <motion.div
-              className="absolute -bottom-1 left-0 h-[2px] w-0"
-              initial={{ width: 0 }}
-              whileHover={{
-                width: "100%",
-                transition: { duration: 0.3, delay: 0.1 },
-              }}
-              style={{
-                background:
-                  "linear-gradient(90deg, #ec4899 0%, transparent 100%)",
-              }}
-            />
-            <motion.div
-              className="absolute top-1/2 -left-4 h-4 w-4 -translate-y-1/2 rounded-full bg-pink-500/0"
-              initial={{ scale: 0 }}
-              whileHover={{
-                scale: 1,
-                backgroundColor: "rgba(236, 72, 153, 0.2)",
-                transition: { duration: 0.3 },
-              }}
-            />
-          </motion.a>
-        </motion.div>
+            >
+              <motion.span
+                className="relative z-10 inline-block mix-blend-difference"
+                initial={{ rotateX: -90 }}
+                animate={{ rotateX: 0 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.4,
+                  ease: "easeOut",
+                }}
+              >
+                FINISH MY SONG
+              </motion.span>
+              <motion.div
+                className="absolute top-0 left-0 h-full w-0 rounded-sm bg-gradient-to-r from-pink-500/20 via-pink-500/10 to-transparent"
+                initial={{ width: 0 }}
+                animate={{
+                  width: ["0%", "150%", "0%"],
+                }}
+                transition={{
+                  duration: 1.5,
+                  delay: 0.6,
+                  ease: "easeInOut",
+                }}
+              />
+              <motion.div
+                className="absolute -bottom-1 left-0 h-[2px] w-0"
+                initial={{ width: 0 }}
+                animate={{ width: "100%" }}
+                transition={{
+                  duration: 0.8,
+                  delay: 1,
+                  ease: "easeOut",
+                }}
+                style={{
+                  background:
+                    "linear-gradient(90deg, #ec4899 0%, transparent 100%)",
+                }}
+              />
+              <motion.div
+                className="absolute top-1/2 -left-4 h-4 w-4 -translate-y-1/2 rounded-full bg-pink-500/0"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{
+                  scale: [0, 1.5, 1],
+                  opacity: [0, 0.6, 0],
+                }}
+                transition={{
+                  duration: 1,
+                  delay: 0.8,
+                  ease: "easeOut",
+                }}
+              />
+            </motion.a>
+          </motion.div>
+        )}
       </div>
     </>
   );

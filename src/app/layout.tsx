@@ -24,15 +24,15 @@ export default function RootLayout({
       <body className={spaceGrotesk.className}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="dark"
+          enableSystem={false}
           disableTransitionOnChange
         >
           {/* Top corners */}
-          <div className="fixed top-6 left-6">
+          <div className="fixed top-6 left-6 z-50">
             <SocialLinks />
           </div>
-          <div className="fixed top-6 right-6">
+          <div className="fixed top-6 right-6 z-50">
             <ModeToggle />
           </div>
 

@@ -11,9 +11,10 @@ export function ModeToggle() {
   return (
     <motion.button
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="text-muted-foreground hover:text-foreground transition-colors"
+      className="text-muted-foreground hover:text-foreground relative z-50 transition-colors"
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
+      style={{ pointerEvents: "auto" }}
     >
       <span className="sr-only">Toggle theme</span>
       {isDark ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
