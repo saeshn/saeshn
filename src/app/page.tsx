@@ -172,7 +172,7 @@ export default function Home() {
                         >
                           <div className="relative">
                             <div className="absolute inset-0 rounded-3xl bg-gradient-to-b from-black/50 via-transparent to-black/50 backdrop-blur-sm" />
-                            <AudioWave />
+                            {isAudioPlaying && <AudioWave />}
                           </div>
                           <div className="relative">
                             <div className="absolute inset-0 rounded-2xl bg-black/30 backdrop-blur-sm" />
