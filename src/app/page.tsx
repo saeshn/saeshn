@@ -96,7 +96,7 @@ export default function Home() {
                   className="space-y-4 text-center"
                 >
                   <h1
-                    className={`${delaGothic.className} relative text-[12rem] leading-none font-bold tracking-tighter`}
+                    className={`${delaGothic.className} relative text-[4rem] leading-none font-bold tracking-tighter md:text-[8rem] lg:text-[12rem]`}
                   >
                     <div className="relative">
                       {["O", "T", "i", "T", "O"].map((letter, index) => (
@@ -154,7 +154,7 @@ export default function Home() {
                     onMouseLeave={() => setIsTextHovered(false)}
                   >
                     <motion.h2
-                      className={`${delaGothic.className} bg-gradient-to-b from-white via-white/90 to-white/50 bg-clip-text text-center text-6xl font-bold tracking-tighter text-transparent`}
+                      className={`${delaGothic.className} bg-gradient-to-b from-white via-white/90 to-white/50 bg-clip-text text-center text-3xl font-bold tracking-tighter text-transparent md:text-4xl lg:text-6xl`}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.6 }}
@@ -170,7 +170,7 @@ export default function Home() {
                           transition={{ duration: 0.4, delay: 0.1 }}
                           className="relative mt-6 mb-8 px-4"
                         >
-                          <p className="mx-auto max-w-2xl text-center text-lg leading-relaxed text-white/80">
+                          <p className="mx-auto max-w-2xl text-center text-sm leading-relaxed text-white/80 md:text-base lg:text-lg">
                             <span className="font-semibold text-pink-500">
                               SAESHN
                             </span>{" "}
@@ -456,6 +456,94 @@ export default function Home() {
             </motion.a>
           </motion.div>
         )}
+
+        {/* Mobile Navigation */}
+        <nav className="fixed right-0 bottom-0 left-0 z-50 bg-black/80 backdrop-blur-lg md:hidden">
+          <ul className="flex justify-around px-2 py-4">
+            {["SAESHN", "COMMUNITY", "RELEASES", "CONTACT"].map(
+              (item, index) => (
+                <motion.li
+                  key={item}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: 0.1 * index,
+                  }}
+                >
+                  <motion.a
+                    href="#"
+                    className="group relative block text-sm font-medium text-white/50 transition-colors hover:text-white"
+                    whileHover={{ scale: 1.1 }}
+                  >
+                    <span className="relative z-10">{item}</span>
+                  </motion.a>
+                </motion.li>
+              ),
+            )}
+          </ul>
+        </nav>
+
+        {/* Audio Player Container - Mobile Optimized */}
+        <div className="fixed right-0 bottom-16 left-0 px-4 md:hidden">
+          <div className="relative rounded-lg bg-black/70 backdrop-blur-sm">
+            <div className="p-2">
+              <AudioPlayer
+                audioUrl="/music/OTITO.wav"
+                autoPlay={false}
+                onPlayingChange={(playing) => {
+                  setIsAudioPlaying(playing);
+                  if (playing) {
+                    setHasPlayedOnce(true);
+                  }
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Berlin Time - Mobile Optimized */}
+        <div className="fixed right-0 bottom-20 p-4 md:bottom-0">
+          <BerlinTime />
+        </div>
+
+        {/* Scroll Indicator - Hide on Mobile */}
+        <motion.div
+          className="fixed bottom-8 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-3 md:flex"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 2.5, duration: 0.8 }}
+        >
+          <p className="text-sm tracking-widest text-white/50 uppercase">
+            scroll and discover the story
+          </p>
+          <motion.div
+            animate={{
+              y: [0, 8, 0],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              repeatType: "loop",
+              ease: "easeInOut",
+            }}
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              className="text-white/50"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <polyline points="19 12 12 19 5 12"></polyline>
+            </svg>
+          </motion.div>
+        </motion.div>
       </div>
     </>
   );
